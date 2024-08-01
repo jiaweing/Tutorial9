@@ -18,6 +18,24 @@ namespace Web.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
+                name: "images",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    file_name = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    file_path = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    upload_date = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_images", x => x.id);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
                 name: "roles",
                 columns: table => new
                 {
@@ -88,19 +106,8 @@ namespace Web.Migrations
                 columns: new[] { "id", "created_at", "name", "updated_at" },
                 values: new object[,]
                 {
-                    { 1, new DateTime(2024, 8, 1, 6, 27, 48, 168, DateTimeKind.Utc).AddTicks(198), "Admin", new DateTime(2024, 8, 1, 6, 27, 48, 168, DateTimeKind.Utc).AddTicks(200) },
-                    { 2, new DateTime(2024, 8, 1, 6, 27, 48, 168, DateTimeKind.Utc).AddTicks(204), "User", new DateTime(2024, 8, 1, 6, 27, 48, 168, DateTimeKind.Utc).AddTicks(204) }
-                });
-
-            migrationBuilder.InsertData(
-                table: "users",
-                columns: new[] { "user_id", "created_at", "email_address", "name", "password", "updated_at" },
-                values: new object[,]
-                {
-                    { "1", new DateTime(2024, 8, 1, 14, 27, 48, 168, DateTimeKind.Local).AddTicks(3049), "john@example.com", "John Doe", "password123", new DateTime(2024, 8, 1, 14, 27, 48, 168, DateTimeKind.Local).AddTicks(3057) },
-                    { "2", new DateTime(2024, 8, 1, 14, 27, 48, 168, DateTimeKind.Local).AddTicks(3058), "jane@example.com", "Jane Smith", "password234", new DateTime(2024, 8, 1, 14, 27, 48, 168, DateTimeKind.Local).AddTicks(3059) },
-                    { "3", new DateTime(2024, 8, 1, 14, 27, 48, 168, DateTimeKind.Local).AddTicks(3060), "alice@example.com", "Alice Johnson", "password345", new DateTime(2024, 8, 1, 14, 27, 48, 168, DateTimeKind.Local).AddTicks(3060) },
-                    { "4", new DateTime(2024, 8, 1, 14, 27, 48, 168, DateTimeKind.Local).AddTicks(3062), "chris@example.com", "Chris Laid", "password456", new DateTime(2024, 8, 1, 14, 27, 48, 168, DateTimeKind.Local).AddTicks(3062) }
+                    { 1, new DateTime(2024, 8, 1, 15, 59, 49, 79, DateTimeKind.Utc).AddTicks(6675), "Admin", new DateTime(2024, 8, 1, 15, 59, 49, 79, DateTimeKind.Utc).AddTicks(6675) },
+                    { 2, new DateTime(2024, 8, 1, 15, 59, 49, 79, DateTimeKind.Utc).AddTicks(6678), "User", new DateTime(2024, 8, 1, 15, 59, 49, 79, DateTimeKind.Utc).AddTicks(6679) }
                 });
 
             migrationBuilder.CreateIndex(
@@ -129,6 +136,9 @@ namespace Web.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "images");
+
             migrationBuilder.DropTable(
                 name: "user_roles");
 

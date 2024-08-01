@@ -12,7 +12,7 @@ using Web.Database;
 namespace Web.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20240801062748_Init")]
+    [Migration("20240801155949_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -24,6 +24,35 @@ namespace Web.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
+
+            modelBuilder.Entity("Web.Models.Image", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasColumnType("longtext")
+                        .HasColumnName("file_name");
+
+                    b.Property<string>("FilePath")
+                        .IsRequired()
+                        .HasColumnType("longtext")
+                        .HasColumnName("file_path");
+
+                    b.Property<DateTime>("UploadDate")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("upload_date");
+
+                    b.HasKey("Id")
+                        .HasName("pk_images");
+
+                    b.ToTable("images", (string)null);
+                });
 
             modelBuilder.Entity("Web.Models.Role", b =>
                 {
@@ -56,16 +85,16 @@ namespace Web.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2024, 8, 1, 6, 27, 48, 168, DateTimeKind.Utc).AddTicks(198),
+                            CreatedAt = new DateTime(2024, 8, 1, 15, 59, 49, 79, DateTimeKind.Utc).AddTicks(6675),
                             Name = "Admin",
-                            UpdatedAt = new DateTime(2024, 8, 1, 6, 27, 48, 168, DateTimeKind.Utc).AddTicks(200)
+                            UpdatedAt = new DateTime(2024, 8, 1, 15, 59, 49, 79, DateTimeKind.Utc).AddTicks(6675)
                         },
                         new
                         {
                             Id = 2,
-                            CreatedAt = new DateTime(2024, 8, 1, 6, 27, 48, 168, DateTimeKind.Utc).AddTicks(204),
+                            CreatedAt = new DateTime(2024, 8, 1, 15, 59, 49, 79, DateTimeKind.Utc).AddTicks(6678),
                             Name = "User",
-                            UpdatedAt = new DateTime(2024, 8, 1, 6, 27, 48, 168, DateTimeKind.Utc).AddTicks(204)
+                            UpdatedAt = new DateTime(2024, 8, 1, 15, 59, 49, 79, DateTimeKind.Utc).AddTicks(6679)
                         });
                 });
 
@@ -114,44 +143,6 @@ namespace Web.Migrations
                         .HasDatabaseName("ix_users_user_id");
 
                     b.ToTable("users", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            UserId = "1",
-                            CreatedAt = new DateTime(2024, 8, 1, 14, 27, 48, 168, DateTimeKind.Local).AddTicks(3049),
-                            EmailAddress = "john@example.com",
-                            Name = "John Doe",
-                            Password = "password123",
-                            UpdatedAt = new DateTime(2024, 8, 1, 14, 27, 48, 168, DateTimeKind.Local).AddTicks(3057)
-                        },
-                        new
-                        {
-                            UserId = "2",
-                            CreatedAt = new DateTime(2024, 8, 1, 14, 27, 48, 168, DateTimeKind.Local).AddTicks(3058),
-                            EmailAddress = "jane@example.com",
-                            Name = "Jane Smith",
-                            Password = "password234",
-                            UpdatedAt = new DateTime(2024, 8, 1, 14, 27, 48, 168, DateTimeKind.Local).AddTicks(3059)
-                        },
-                        new
-                        {
-                            UserId = "3",
-                            CreatedAt = new DateTime(2024, 8, 1, 14, 27, 48, 168, DateTimeKind.Local).AddTicks(3060),
-                            EmailAddress = "alice@example.com",
-                            Name = "Alice Johnson",
-                            Password = "password345",
-                            UpdatedAt = new DateTime(2024, 8, 1, 14, 27, 48, 168, DateTimeKind.Local).AddTicks(3060)
-                        },
-                        new
-                        {
-                            UserId = "4",
-                            CreatedAt = new DateTime(2024, 8, 1, 14, 27, 48, 168, DateTimeKind.Local).AddTicks(3062),
-                            EmailAddress = "chris@example.com",
-                            Name = "Chris Laid",
-                            Password = "password456",
-                            UpdatedAt = new DateTime(2024, 8, 1, 14, 27, 48, 168, DateTimeKind.Local).AddTicks(3062)
-                        });
                 });
 
             modelBuilder.Entity("Web.Models.UserRole", b =>

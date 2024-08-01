@@ -60,12 +60,6 @@ public partial class DatabaseContext : DbContext
             entity.Property(e => e.Password)
                 .HasMaxLength(45)
                 .HasColumnName("password");
-
-            entity.HasData(
-                new User { UserId = "1", Name = "John Doe", EmailAddress = "john@example.com", Password = "password123", CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
-                new User { UserId = "2", Name = "Jane Smith", EmailAddress = "jane@example.com", Password = "password234", CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
-                new User { UserId = "3", Name = "Alice Johnson", EmailAddress = "alice@example.com", Password = "password345", CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
-                new User { UserId = "4", Name = "Chris Laid", EmailAddress = "chris@example.com", Password = "password456", CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now });
         });
 
         OnModelCreatingPartial(modelBuilder);
