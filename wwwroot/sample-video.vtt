@@ -1,0 +1,81 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:05.000
+Welcome to the audio tutorial.
+
+2
+00:00:05.000 --> 00:00:10.000
+In this section, we will discuss HTML5 features.
+
+3
+00:00:10.000 --> 00:00:15.000
+Feel free to ask questions at any time.
+
+4
+00:00:15.000 --> 00:00:20.000
+Let's dive into the details of audio and video elements.
+
+5
+00:00:20.000 --> 00:00:25.000
+HTML5 introduces new semantic elements.
+
+6
+00:00:25.000 --> 00:00:30.000
+These elements help structure your web pages better.
+
+7
+00:00:30.000 --> 00:00:35.000
+For example, the <article> and <section> tags.
+
+8
+00:00:35.000 --> 00:00:40.000
+Now, let's look at the <audio> element.
+
+9
+00:00:40.000 --> 00:00:45.000
+The <audio> element allows you to embed sound content.
+
+10
+00:00:45.000 --> 00:00:50.000
+You can control playback using JavaScript.
+
+11
+00:00:50.000 --> 00:00:55.000
+Next, we will explore the <video> element.
+
+12
+00:00:55.000 --> 00:01:00.000
+The <video> element works similarly to the <audio> element.
+
+13
+00:01:00.000 --> 00:01:05.000
+It allows you to embed video content.
+
+14
+00:01:05.000 --> 00:01:10.000
+You can also control video playback using JavaScript.
+
+15
+00:01:10.000 --> 00:01:15.000
+Let's move on to some advanced features.
+
+16
+00:01:15.000 --> 00:01:20.000
+HTML5 supports offline web applications.
+
+17
+00:01:20.000 --> 00:01:25.000
+This is achieved using the Application Cache.
+
+18
+00:01:25.000 --> 00:01:30.000
+You can specify resources to cache in a manifest file.
+
+19
+00:01:30.000 --> 00:01:35.000
+This allows your web app to work without an internet connection.
+
+20
+00:01:35.000 --> 00:01:40.000
+Thank you for watching this tutorial.

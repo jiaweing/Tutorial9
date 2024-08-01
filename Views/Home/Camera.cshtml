@@ -1,0 +1,142 @@
+﻿<h1>Camera and Image Upload</h1>
+
+<div id="cameraControls">
+    <select id="cameraSelect" class="form-control">
+        <option value="">Choose a camera</option>
+    </select>
+    <button id="startCameraButton" class="btn btn-primary mt-2">Start Camera</button>
+</div>
+<video id="video" autoplay playsinline class="mt-2"></video>
+<button id="captureButton" style="display: none;" class="btn btn-secondary mt-2">Capture Photo</button>
+<canvas id="canvas"></canvas>
+
+<form id="uploadForm" action="/Home/Upload" method="POST" enctype="multipart/form-data">
+    <h2>Upload Image</h2>
+    <input type="file" id="fileInput" name="file" accept="image/*" class="form-control">
+    <img id="preview" alt="Preview" class="mt-2">
+    <input type="submit" value="Upload Image" class="btn btn-success mt-2">
+</form>
+
+@section Styles {
+    <style>
+        #video, #canvas, #preview {
+            width: 100%;
+            max-width: 400px;
+            display: none;
+        }
+
+        form {
+            margin-top: 20px;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script>
+        const cameraControls = document.getElementById('cameraControls');
+        const cameraSelect = document.getElementById('cameraSelect');
+        const startCameraButton = document.getElementById('startCameraButton');
+        const video = document.getElementById('video');
+        const captureButton = document.getElementById('captureButton');
+        const canvas = document.getElementById('canvas');
+        const fileInput = document.getElementById('fileInput');
+        const preview = document.getElementById('preview');
+        const uploadForm = document.getElementById('uploadForm');
+
+        let stream;
+
+        // Populate camera select options
+        async function populateCameraOptions() {
+            const devices = await navigator.mediaDevices.enumerateDevices();
+            const videoDevices = devices.filter(device => device.kind === 'videoinput');
+            videoDevices.forEach(device => {
+                const option = document.createElement('option');
+                option.value = device.deviceId;
+                option.text = device.label || `Camera ${cameraSelect.length + 1}`;
+                cameraSelect.add(option);
+            });
+            cameraControls.style.display = 'block';
+        }
+
+        // Start the selected camera
+        async function startCamera() {
+            const deviceId = cameraSelect.value;
+            const constraints = {
+                video: { deviceId: deviceId ? { exact: deviceId } : undefined }
+            };
+
+            try {
+                if (stream) {
+                    stream.getTracks().forEach(track => track.stop());
+                }
+                stream = await navigator.mediaDevices.getUserMedia(constraints);
+                video.srcObject = stream;
+                video.style.display = 'block';
+                captureButton.style.display = 'block';
+            } catch (err) {
+                console.error('Error accessing camera:', err);
+                alert('Error accessing camera: ' + err.message);
+            }
+        }
+
+        // Event listeners
+        window.addEventListener('load', populateCameraOptions);
+        startCameraButton.addEventListener('click', startCamera);
+
+        captureButton.addEventListener('click', () => {
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            canvas.getContext('2d').drawImage(video, 0, 0);
+
+            canvas.toBlob((blob) => {
+                const file = new File([blob], "captured-image.jpg", { type: "image/jpeg" });
+                const dataTransfer = new DataTransfer();
+                dataTransfer.items.add(file);
+                fileInput.files = dataTransfer.files;
+                preview.src = URL.createObjectURL(blob);
+                preview.style.display = 'block';
+            }, 'image/jpeg');
+
+            video.style.display = 'none';
+            captureButton.style.display = 'none';
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+            }
+        });
+
+        fileInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                preview.src = URL.createObjectURL(file);
+                preview.style.display = 'block';
+            }
+        });
+
+        uploadForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+
+            const formData = new FormData(uploadForm);
+
+            fetch(uploadForm.action, {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.text().then(text => {
+                            throw new Error(text || response.statusText);
+                        });
+                    }
+                    return response.json();
+                })
+                .then(result => {
+                    console.log('Success:', result);
+                    alert('Image uploaded successfully!');
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Upload failed. Please try again. Error: ' + error.message);
+                });
+        });
+    </script>
+}

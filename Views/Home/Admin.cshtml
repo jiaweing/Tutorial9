@@ -1,0 +1,19 @@
+﻿@model UserClaims
+@{
+    ViewData["Title"] = "Admin Page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Welcome, Admin</h1>
+    <p>This page can only be viewed by those who are admins.</p>
+</div>
+
+<p>Claims:</p>
+<ul>
+    <li>Jti: @Model.Jti</li>
+    <li>Iat: @Model.Iat</li>
+    <li>Nickname: @Model.Nickname</li>
+    <li>UserId: @Model.UserId</li>
+    <li>Email: @Model.Email</li>
+    <li>Role: @Model.Role</li>
+</ul>

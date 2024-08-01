@@ -1,0 +1,153 @@
+﻿<h1>Audio and Video</h1>
+
+<!-- Audio Player Section -->
+<div class="media-container mt-4">
+    <h2>Audio Player</h2>
+    <audio id="audioPlayer" controls>
+        <source src="/sample-audio.wav" type="audio/wav">
+        Your browser does not support the audio element.
+    </audio>
+    <div class="transcript">
+        <h3>Transcript</h3>
+        <div class="transcript" id="transcript">
+            <p>Play to see captions</p>
+        </div>
+    </div>
+</div>
+
+<hr />
+
+<!-- Video Player Section -->
+<div class="media-container">
+    <h2>Video Player</h2>
+    <video id="videoPlayer" controls width="600">
+        <source src="/sample-video.mp4" type="video/mp4">
+        <track src="/sample-video.vtt" kind="subtitles" srclang="en" label="English" default>
+        Your browser does not support the video element.
+    </video>
+</div>
+
+@section Styles {
+    <style>
+        .media-container {
+            margin-bottom: 20px;
+        }
+
+        .transcript {
+            margin-top: 10px;
+            font-size: 0.9em;
+            color: #555;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script>
+        const audio = document.getElementById('audioPlayer');
+        const transcriptContainer = document.getElementById('transcript');
+
+        // Function to parse VTT file and return captions
+        async function loadVTT(url) {
+            const response = await fetch(url);
+            if (!response.ok) throw new Error('Failed to load VTT file');
+            const text = await response.text();
+            const captions = [];
+            const lines = text.split('\n').map(line => line.trim());
+            let currentCaption = null;
+
+            for (let line of lines) {
+                if (line === '') {
+                    if (currentCaption) {
+                        captions.push(currentCaption);
+                        currentCaption = null;
+                    }
+                } else if (!currentCaption) {
+                    const [start, end] = line.split(' --> ');
+                    if (start && end) {
+                        currentCaption = { start: parseTime(start), end: parseTime(end), text: '' };
+                    } else {
+                        console.warn('Skipping malformed timing line:', line);
+                    }
+                } else {
+                    currentCaption.text += (currentCaption.text ? ' ' : '') + line;
+                }
+            }
+
+            // Add the last caption if there is no trailing newline
+            if (currentCaption) {
+                captions.push(currentCaption);
+            }
+
+            return captions;
+        }
+
+        // Function to parse time in "HH:MM:SS.MMM" format to seconds
+        function parseTime(timeString) {
+            const parts = timeString.split(':');
+            if (parts.length < 3) {
+                console.error('Invalid time format:', timeString);
+                return 0;
+            }
+            const [hours, minutes, seconds] = parts;
+            const [secs, ms] = seconds.split('.');
+            return (+hours * 3600) + (+minutes * 60) + (+secs) + (ms ? +ms / 1000 : 0);
+        }
+
+        // Function to update transcript based on audio time
+        function updateTranscript(captions) {
+            const currentTime = audio.currentTime;
+            const caption = captions.find(c => currentTime >= c.start && currentTime <= c.end);
+            if (caption) {
+                transcriptContainer.innerHTML = `<p>${caption.text}</p>`;
+            } else {
+                transcriptContainer.innerHTML = '';
+            }
+        }
+
+        // Main function to initialize and handle audio and captions
+        async function init() {
+            try {
+                const captions = await loadVTT('/sample-audio.vtt');
+                audio.addEventListener('timeupdate', () => updateTranscript(captions));
+                audio.addEventListener('play', () => updateTranscript(captions));
+            } catch (error) {
+                transcriptContainer.innerHTML = '<p>Error loading captions.</p>';
+                console.error('Error:', error);
+            }
+        }
+
+        init();
+    </script>
+
+    <script>
+        // Get video player element
+        const videoPlayer = document.getElementById('videoPlayer');
+
+        // Function to toggle full screen mode
+        function toggleFullScreen() {
+            if (!document.fullscreenElement) {
+                videoPlayer.requestFullscreen().catch(err => {
+                    console.log(`Error attempting to enable full-screen mode: ${err.message} (${err.name})`);
+                });
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        // Function to adjust playback speed
+        function setPlaybackSpeed(speed) {
+            videoPlayer.playbackRate = speed;
+        }
+
+        // Event listener for keyboard shortcuts (example)
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'f') { // Press 'f' to toggle full screen
+                toggleFullScreen();
+            } else if (event.key === '+') { // Press '+' to increase speed
+                setPlaybackSpeed(videoPlayer.playbackRate + 0.25);
+            } else if (event.key === '-') { // Press '-' to decrease speed
+                setPlaybackSpeed(videoPlayer.playbackRate - 0.25);
+            }
+        });
+    </script>
+}

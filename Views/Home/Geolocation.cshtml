@@ -1,0 +1,114 @@
+﻿@model GeolocationModel
+
+<h1>Geolocation</h1>
+<div id="status">Waiting for location...</div>
+<div id="location"></div>
+<div id="distance"></div>
+<div id="map" style="height: 400px; width: 100%;" class="mt-4"></div>
+
+@section Styles {
+    <style>
+        #status {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script src="https://maps.googleapis.com/maps/api/js?key=@Model.APIKey"></script>
+    <script>
+        const targetLat = 40.712776;
+        const targetLon = -74.005974;
+        let map;
+        let userMarker;
+        let targetMarker;
+
+        function initMap() {
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: { lat: targetLat, lng: targetLon },
+                zoom: 12
+            });
+
+            targetMarker = new google.maps.Marker({
+                position: { lat: targetLat, lng: targetLon },
+                map: map,
+                title: 'Target Location'
+            });
+        }
+
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(showPosition, showError);
+            } else {
+                document.getElementById("status").innerHTML = "Geolocation is not supported by this browser.";
+            }
+        }
+
+        function showPosition(position) {
+            const lat = position.coords.latitude;
+            const lon = position.coords.longitude;
+
+            document.getElementById("status").innerHTML = "Location found!";
+            document.getElementById("location").innerHTML = `Latitude: ${lat}<br>Longitude: ${lon}`;
+
+            const distance = calculateDistance(lat, lon, targetLat, targetLon);
+            document.getElementById("distance").innerHTML = `Distance to target: ${distance.toFixed(2)} meters`;
+
+            if (distance <= 20) {
+                document.getElementById("status").innerHTML += "<br>You are within 20 meters of the target location!";
+            } else {
+                document.getElementById("status").innerHTML += "<br>You are not within 20 meters of the target location.";
+            }
+
+            const userLocation = { lat: lat, lng: lon };
+
+            if (userMarker) {
+                userMarker.setPosition(userLocation);
+            } else {
+                userMarker = new google.maps.Marker({
+                    position: userLocation,
+                    map: map,
+                    title: 'Your Location'
+                });
+            }
+
+            map.setCenter(userLocation);
+        }
+
+        function showError(error) {
+            switch (error.code) {
+                case error.PERMISSION_DENIED:
+                    document.getElementById("status").innerHTML = "User denied the request for Geolocation.";
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    document.getElementById("status").innerHTML = "Location information is unavailable.";
+                    break;
+                case error.TIMEOUT:
+                    document.getElementById("status").innerHTML = "The request to get user location timed out.";
+                    break;
+                case error.UNKNOWN_ERROR:
+                    document.getElementById("status").innerHTML = "An unknown error occurred.";
+                    break;
+            }
+        }
+
+        function calculateDistance(lat1, lon1, lat2, lon2) {
+            const R = 6371e3; // Earth's radius in meters
+            const φ1 = lat1 * Math.PI / 180;
+            const φ2 = lat2 * Math.PI / 180;
+            const Δφ = (lat2 - lat1) * Math.PI / 180;
+            const Δλ = (lon2 - lon1) * Math.PI / 180;
+
+            const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+                Math.cos(φ1) * Math.cos(φ2) *
+                Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+            return R * c; // Distance in meters
+        }
+
+        initMap();
+        getLocation();
+    </script>
+}
