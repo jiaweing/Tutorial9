@@ -2,10 +2,12 @@
 
 <h1>Payment</h1>
 <form id="payment-form" method="post" asp-action="Checkout" class="needs-validation" novalidate>
-    <label for="amount" class="form-label">Amount:</label>
-    <input type="text" id="amount" name="amount" class="form-control" required />
-    <div class="invalid-feedback">
-        Please enter an amount.
+    <div class="mb-3">
+        <label for="amount" class="form-label">Amount:</label>
+        <input type="text" id="amount" name="amount" class="form-control" required />
+        <div class="invalid-feedback">
+            Please enter an amount.
+        </div>
     </div>
 
     <div id="dropin-container" class="mb-3"></div>
@@ -26,7 +28,26 @@
 
     braintree.dropin.create({
         authorization: clientToken,
-        container: '#dropin-container'
+        container: '#dropin-container',
+        applePay: {
+            displayName: 'Your Merchant Name',
+            paymentRequest: {
+                total: {
+                    label: 'Your Merchant Name',
+                    amount: '1.00' // Default amount, will be updated dynamically
+                },
+                requiredBillingContactFields: ["postalAddress"]
+            }
+        },
+        googlePay: {
+            googlePayVersion: 2,
+            merchantId: 'your-merchant-id',
+            transactionInfo: {
+                totalPriceStatus: 'FINAL',
+                totalPrice: '1.00', // Default amount, will be updated dynamically
+                currencyCode: 'USD'
+            }
+        }
     }, function (createErr, instance) {
         if (createErr) {
             console.error('Create Error', createErr);
@@ -35,6 +56,20 @@
 
         form.addEventListener('submit', function (event) {
             event.preventDefault();
+
+            var amount = document.querySelector('#amount').value;
+
+            // Update Apple Pay and Google Pay amounts dynamically
+            instance.updateConfiguration('applePay', 'paymentRequest', {
+                total: {
+                    label: 'Your Merchant Name',
+                    amount: amount
+                }
+            });
+
+            instance.updateConfiguration('googlePay', 'transactionInfo', {
+                totalPrice: amount
+            });
 
             instance.requestPaymentMethod(function (err, payload) {
                 if (err) {
@@ -45,6 +80,14 @@
                 document.querySelector('input[name="paymentMethodNonce"]').value = payload.nonce;
                 document.querySelector('#payment-form').style.display = 'none';
                 document.querySelector('#loading').style.display = 'block';
+
+                // Add the amount to the form data
+                var amountInput = document.createElement('input');
+                amountInput.type = 'hidden';
+                amountInput.name = 'amount';
+                amountInput.value = amount;
+                form.appendChild(amountInput);
+
                 form.submit();
             });
         });
