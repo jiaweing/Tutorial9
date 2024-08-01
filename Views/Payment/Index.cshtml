@@ -29,6 +29,9 @@
     braintree.dropin.create({
         authorization: clientToken,
         container: '#dropin-container',
+        paypal: {
+            flow: 'vault'
+        },
         applePay: {
             displayName: 'Your Merchant Name',
             paymentRequest: {
