@@ -51,16 +51,19 @@ namespace Web.Controllers
             return View("Admin", _claims);
         }
 
+        [Authorize]
         public IActionResult Canvas()
         {
             return View();
         }
 
+        [Authorize]
         public IActionResult Camera()
         {
             return View();
         }
 
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> Upload([FromForm] IFormFile file)
         {
@@ -92,11 +95,13 @@ namespace Web.Controllers
             return Ok(new { message = "Image uploaded successfully", image });
         }
 
+        [Authorize]
         public IActionResult Video()
         {
             return View();
         }
 
+        [Authorize]
         public IActionResult Geolocation()
         {
             var model = new GeolocationModel()

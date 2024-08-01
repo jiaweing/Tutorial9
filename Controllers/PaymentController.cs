@@ -1,9 +1,11 @@
 ﻿using Braintree;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Web.Models;
 
 namespace Web.Controllers
 {
+    [Authorize]
     public class PaymentController : Controller
     {
         private readonly Services.BraintreeService _braintreeService;
