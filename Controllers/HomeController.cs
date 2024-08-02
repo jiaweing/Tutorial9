@@ -67,8 +67,11 @@ namespace Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Upload([FromForm] IFormFile file)
         {
-            if (file == null || file.Length == 0)
-                return BadRequest("No file uploaded");
+            if (!ModelState.IsValid)
+            {
+                ModelState.AddModelError("", "Photo upload failed");
+                return View();
+            }
 
             var uploadPath = Path.Combine(_environment.WebRootPath, "uploads");
             if (!Directory.Exists(uploadPath))
